@@ -1,5 +1,5 @@
 # ForwardsCoverBot - don't let people on telegram forward with your name on the forward label
-# Copyright (C) 2017-2024  Dario <dariomsn@hotmail.it> (github.com/91DarioDev)
+# Copyright (C) 2017-2022  Dario <dariomsn@hotmail.it> (github.com/91DarioDev)
 #
 # ForwardsCoverBot is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
@@ -62,8 +62,7 @@ def leave_only_url_buttons_in_reply_markup(inline_keyboard):
 
 async def process_message(
         update, context, message=None, remove_caption=False, custom_caption=None, 
-        remove_buttons=False, custom_reply_markup=None, disable_web_page_preview=False,
-        spoiler_action=None):
+        remove_buttons=False, custom_reply_markup=None, disable_web_page_preview=False):
 
     if not message:
         message = update.effective_message
@@ -92,20 +91,12 @@ async def process_message(
         reply_markup = None
 
 
-    new_spoiler = message.has_media_spoiler
-    if spoiler_action:
-        if spoiler_action == 'add':
-            new_spoiler = True
-        if spoiler_action == 'remove':
-            new_spoiler = False
-
-
     if message.text:
         await message.reply_text(
             text=message.text_html, 
             parse_mode=ParseMode.HTML, 
             reply_markup=reply_markup,
-            link_preview_options=message.link_preview_options if not disable_web_page_preview else {'is_disabled': True}
+            disable_web_page_preview=disable_web_page_preview
         )
 
     elif message.voice:
@@ -125,20 +116,7 @@ async def process_message(
             photo=media, 
             caption=caption, 
             parse_mode=ParseMode.HTML, 
-            reply_markup=reply_markup,
-            has_spoiler=new_spoiler,
-            show_caption_above_media=message.show_caption_above_media
-        )
-
-    elif message.animation:
-        media = message.animation.file_id
-        await message.reply_animation(
-            animation=media, 
-            caption=caption, 
-            parse_mode=ParseMode.HTML, 
-            reply_markup=reply_markup,
-            has_spoiler=new_spoiler,
-            show_caption_above_media=message.show_caption_above_media
+            reply_markup=reply_markup
         )
 
     elif message.sticker:
@@ -182,9 +160,7 @@ async def process_message(
             duration=duration, 
             caption=caption, 
             parse_mode=ParseMode.HTML, 
-            reply_markup=reply_markup,
-            has_spoiler=new_spoiler,
-            show_caption_above_media=message.show_caption_above_media
+            reply_markup=reply_markup
         )
 
     elif message.contact:

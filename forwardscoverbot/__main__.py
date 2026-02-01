@@ -1,5 +1,5 @@
 # ForwardsCoverBot - don't let people on telegram forward with your name on the forward label
-# Copyright (C) 2017-2024  Dario <dariomsn@hotmail.it> (github.com/91DarioDev)
+# Copyright (C) 2017-2022  Dario <dariomsn@hotmail.it> (github.com/91DarioDev)
 #
 # ForwardsCoverBot is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
@@ -45,12 +45,6 @@ logger = logging.getLogger(__name__)
 aps_logger = logging.getLogger('apscheduler')
 aps_logger.setLevel(logging.WARNING)
 
-
-# disable httpx logging
-httpx_logger = logging.getLogger('httpx')
-httpx_logger.setLevel(logging.WARNING)
-
-
 async def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
@@ -63,24 +57,22 @@ async def before_serving(application):
 def main():
     print("\nrunning...")
     # define the application
-    application = Application.builder().token(config.BOT_TOKEN).post_init(before_serving).build()
+    application = Application.builder().token(config.BOT_TOKEN).concurrent_updates(True).post_init(before_serving).build()
     # messages
     application.add_handler(MessageHandler(filters.ALL, messages.before_processing), 0)
     # albums
     application.add_handler(MessageHandler(custom_filters.album, albums.collect_album_items), 1)
     # messages
-    application.add_handler(MessageHandler(filters.ALL, messages.process_message, block=False), 1)
+    application.add_handler(MessageHandler(filters.ALL, messages.process_message), 1)
     # commands
+    application.add_handler(CommandHandler(('start', 'help'), commands.help_command), 2)
     application.add_handler(CommandHandler('stats', commands.stats), 2)
-    application.add_handler(CommandHandler(('start', 'help'), commands.help_command, block=False), 2)
-    application.add_handler(CommandHandler('disablewebpagepreview', commands.disable_web_page_preview, block=False), 2)
-    application.add_handler(CommandHandler('removecaption', commands.remove_caption, block=False), 2)
-    application.add_handler(CommandHandler('removebuttons', commands.remove_buttons, block=False), 2)
-    application.add_handler(CommandHandler('addcaption', commands.add_caption, block=False), 2)
-    application.add_handler(CommandHandler('addbuttons', commands.add_buttons, block=False), 2)
-    application.add_handler(CommandHandler('removespoiler', commands.remove_spoiler, block=False), 2)
-    application.add_handler(CommandHandler('addspoiler', commands.add_spoiler, block=False), 2)
-    application.add_handler(MessageHandler(filters.COMMAND, utils.invalid_command, block=False), 2)
+    application.add_handler(CommandHandler('disablewebpagepreview', commands.disable_web_page_preview), 2)
+    application.add_handler(CommandHandler('removecaption', commands.remove_caption), 2)
+    application.add_handler(CommandHandler('removebuttons', commands.remove_buttons), 2)
+    application.add_handler(CommandHandler('addcaption', commands.add_caption), 2)
+    application.add_handler(CommandHandler('addbuttons', commands.add_buttons), 2)
+    application.add_handler(MessageHandler(filters.COMMAND, utils.invalid_command), 2)
 
 
     # handle errors
