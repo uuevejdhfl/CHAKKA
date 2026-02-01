@@ -54,5 +54,3 @@ pip install --upgrade .
 - `/addcaption` - add or overwrite a caption to a message
 - `/removebuttons` - remove buttons from a message
 - `/addbuttons` - addbuttons to the message
-- `/addspoiler` - add a spoiler to the message
-- `/removespoiler` - remove the spoiler from the message
